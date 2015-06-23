@@ -1,0 +1,16 @@
+{
+    "contents" : "# generate graphs for estimating soft thresholding parameters\n\n# inputs:\n#   CEL files\n\n### dependencies\nlibrary(optparse)\nlibrary(oligo)\nlibrary(Biobase)\nlibrary(genefilter)\nlibrary(WGCNA)\nlibrary(flashClust)\nlibrary(hugene10sttranscriptcluster.db)\nlibrary(genefilter)\noptions(stringsAsFactors = FALSE)\nallowWGCNAThreads()\n\nsource(\"../R/eset_tools.R\")\n### command line options\noption_list <- list(\n  make_option(\"--cel_path\", default=\"../data/TransplantCELs/batch1_2009\",\n              help=\"Top level directory to start recursive search for *.CEL files.\"),\n  make_option(\"--out\", default=\"../data/parameters.txt\",\n              help=\"Location to save the ExpressionSet object. Defaults to ./eset.Rdata\"),\n  make_option(\"--verbose\", action=\"store_true\", default=FALSE,\n              help=\"Print extra output advising the user of progression through the analysis.\")\n)\n\nargs <- parse_args(OptionParser(option_list=option_list))\n\nmatched_files <- list.files(path = args$cel_path, pattern = \".*CEL\", all.files = FALSE, full.names = TRUE, recursive = TRUE, ignore.case = TRUE)\ncels <- read.celfiles(matched_files)\neset <- oligo::rma(cels_pass, target=\"core\")\n\naffy_annotation = \"../data/HuGene-1_0-st-v1.na35.hg19.transcript.csv\"\neset <- gene_filter_eset(eset, affy_annotation)\n\n### generate network using different soft thresholding parameters\npowers = c(c(1:10), seq(from = 12, to=20, by=2))\n\n# Call the network topology analysis function\nsft = pickSoftThreshold(expr_data, powerVector = powers, verbose = 5)\n\n# from tutorial\nsizeGrWindow(9, 5)\npar(mfrow = c(1,2));\ncex1 = 0.9;\n\n# Scale-free topology fit index as a function of the soft-thresholding power\nplot(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],\n     xlab=\"Soft Threshold (power)\",ylab=\"Scale Free Topology Model Fit,signed R^2\",type=\"n\",\n     main = paste(\"Scale independence\"));\ntext(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],\n     labels=powers,cex=cex1,col=\"red\");\n\n# this line corresponds to using an R^2 cut-off of h\nabline(h=0.90,col=\"red\")\n\n# Mean connectivity as a function of the soft-thresholding power\nplot(sft$fitIndices[,1], sft$fitIndices[,5],\n     xlab=\"Soft Threshold (power)\",ylab=\"Mean Connectivity\", type=\"n\",\n     main = paste(\"Mean connectivity\"))\ntext(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col=\"red\")\n\nwrite(\"The plot produced can be used to pick a soft thresholding parameter \n      for subsequent analyses. Red line is drawn at 0.90, but k should be\n      chosen at the point where correlation begins to level out and where\n      mean connectivity is at a reasonable value.\", stderr())\n\n",
+    "created" : 1434991373475.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1143153046",
+    "id" : "1A73903A",
+    "lastKnownWriteTime" : 1435049874,
+    "path" : "~/code/wgcna_corr/scripts/thresholding_parameters.R",
+    "project_path" : "scripts/thresholding_parameters.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
