@@ -17,5 +17,18 @@ Rscript generate_modules.R --eset=/path/to/expressionset/Rdata/file --soft_thres
 
 This script will generate gene -> gene module assignment by building a network, clustering into a dendrogram, and using DynamicTreeCut to slice the dendrogram branches into module assignments. A tab-delimited text file will be produced that maps genes to fine-grained modules and to larger modules (by combining modules with eigengene correlation >80%).
 
+PDF plots showing correlation between modules as well as module colors in the context of the dendrogram of genes will be produced in the specified out_dir.
+
 _Important output to keep:_ Gene module assignments and ExpressionSet object (from thresholding_parameters.R). These will be used to determine module eigengenes to correlate with phenotypes.
+
+# Correlating Module Eigengenes with Phenotypes
+
+```bash
+Rscript eigengene_phenotype_correlations.R --eset=/path/to/expressionset/Rdata/file --gene_modules=/path/to/gene/modules/text/file --out_dir=/directory/to/save/correlation/matrices --discrete_phenotypes=csv_file --continuous_phenotyes=csv_file
+```
+
+This is the final data generation step of the workflow. After this, multiple sets (i.e. discovery and validation) can be analyzed together to look for modular overlaps. 
+
+_Important output to keep:_ Correlation and p-value matrices. Together with gene module assignment text file, two different sets of _de novo_ module to phenotype correlations can be cross-referenced.
+
 
