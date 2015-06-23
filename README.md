@@ -31,4 +31,17 @@ This is the final data generation step of the workflow. After this, multiple set
 
 _Important output to keep:_ Correlation and p-value matrices. Together with gene module assignment text file, two different sets of _de novo_ module to phenotype correlations can be cross-referenced.
 
+# Putting it all together
 
+Running a discovery set from top to bottom could look like this:
+```bash
+Rscript thresholding_parameters.R --cel_path="../data/TransplantCELs/discovery/" --out="../results/discovery/"
+
+# determined optimal k = 10
+
+Rscript generate_modules.R --eset="../results/discovery/expression_set.RData" --soft_thresh_k=10 --out_dir="../results/discovery/"
+
+Rscript eigengene_phenotype_correlations.R --eset="../results/discovery/expression_set.RData" --gene_modules="../results/discovery/gene_modules.txt" --out_dir="../results/discovery/" --discrete_phenotypes="../data/transplant_discrete_phenotypes.csv" --continuous_phenotyes="../data/transplant_continuous_phenotypes.csv"
+```
+
+We could then run the identical pipeline for a validation set. At the end, we will have gene module to phenotype correlations for both discovery and validation sets. When there is real biological signal, we should see overlap in gene membership for modules in the discovery and validation set which are both correlated with the phenotype of interest.
