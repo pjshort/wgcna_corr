@@ -74,4 +74,4 @@ write("The plot produced can be used to pick a soft thresholding parameter
 
 write("Saving expression set in out dir.", stderr())
 
-save(eset, paste0(args$out_dir, "/expression_set.RData"))
+save(eset, file = paste0(args$out_dir, "/expression_set.RData"))
