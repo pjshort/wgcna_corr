@@ -116,9 +116,34 @@ gene_modules = cbind("gene_name" = rownames(eset), module_colors, merged_colors)
 write(sprintf("Writing output into %s", args$out_dir), stderr())
 dir.create(args$out_dir)
 
+# save gene modules to out dir
 write.table(gene_modules, file = paste0(args$out_dir, "/gene_modules.txt"), 
             col.names = TRUE, row.names = FALSE, quote = FALSE, sep = "\t")
 
+# calculate module eigengenes to draw similarity dendrograms
+fine_MEs = orderMEs(moduleEigengenes(expr_data, module_colors)$eigengenes)
+colnames(fine_MEs) <- substring(colnames(fine_MEs), 3)
+merged_MEs = orderMEs(moduleEigengenes(expr_data, merged_colors)$eigengenes)
+colnames(merged_MEs) <- substring(colnames(merged_MEs), 3)
 
 
+# save plots to out dir - dendrogram (fine-grained and merged) and module dendrogram
+pdf(paste0(args$out_dir, "/gene_module_correlation.pdf"))
+MEDiss = 1-cor(fine_MEs);
+# Cluster module eigengenes
+METree = hclust(as.dist(MEDiss), method = "average")
+# Plot the result
+plot(METree, main = "Clustering Module Eigengenes",
+     xlab = "", sub = "")
+
+# cut the tree at 0.20 (80% correlation)
+MEDissThres = 0.20
+# Plot the cut line into the dendrogram
+abline(h=MEDissThres, col = "red")
+dev.off()
+
+pdf(paste0(args$out_dir, "/gene_expr_dendrogram.pdf"))
+plotDendroAndColors(geneTree, cbind(module_colors, merged_colors),
+                    c("Original", "Merged"), dendroLabels = FALSE, hang = 0.03, addGuide = TRUE, guideHang = 0.05)
+dev.off()
 
