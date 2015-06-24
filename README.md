@@ -24,7 +24,7 @@ _Important output to keep:_ Gene module assignments and ExpressionSet object (fr
 # Correlating Module Eigengenes with Phenotypes
 
 ```bash
-Rscript eigengene_phenotype_correlations.R --eset=/path/to/expressionset/Rdata/file --gene_modules=/path/to/gene/modules/text/file --out_dir=/directory/to/save/correlation/matrices --discrete_phenotypes=csv_file --continuous_phenotyes=csv_file
+Rscript eigengene_phenotype_correlation.R --eset=/path/to/expressionset/Rdata/file --gene_modules=/path/to/gene/modules/text/file --out_dir=/directory/to/save/correlation/matrices --discrete_phenotypes=csv_file --continuous_phenotyes=csv_file
 ```
 
 This is the final data generation step of the workflow. After this, multiple sets (i.e. discovery and validation) can be analyzed together to look for modular overlaps. 
@@ -41,7 +41,7 @@ Rscript thresholding_parameters.R --cel_path="../data/TransplantCELs/discovery/"
 
 Rscript generate_modules.R --eset="../results/discovery/expression_set.RData" --soft_thresh_k=10 --out_dir="../results/discovery/"
 
-Rscript eigengene_phenotype_correlations.R --eset="../results/discovery/expression_set.RData" --gene_modules="../results/discovery/gene_modules.txt" --out_dir="../results/discovery/" --discrete_phenotypes="../data/transplant_discrete_phenotypes.csv" --continuous_phenotyes="../data/transplant_continuous_phenotypes.csv"
+Rscript eigengene_phenotype_correlation.R --eset="../results/discovery/expression_set.RData" --gene_modules="../results/discovery/gene_modules.txt" --out_dir="../results/discovery/" --discrete_phenotypes="../data/transplant_discrete_phenotypes.csv" --continuous_phenotyes="../data/transplant_continuous_phenotypes.csv"
 ```
 
 We could then run the identical pipeline for a validation set. At the end, we will have gene module to phenotype correlations for both discovery and validation sets. When there is real biological signal, we should see overlap in gene membership for modules in the discovery and validation set which are both correlated with the phenotype of interest.
