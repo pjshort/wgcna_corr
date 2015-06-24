@@ -47,7 +47,9 @@ option_list <- list(
 args <- parse_args(OptionParser(option_list=option_list))
 
 #test conditions
-args$soft_thresh_k = 7
+args$soft_thresh_k = 10
+args$eset = "../results/discovery//expression_set.RData"
+args$out_dir = "../results/discovery/"
 
 
 # TODO - edit script to take ExpressionSet object instead of CEL files if user specifies
@@ -85,14 +87,8 @@ if (args$soft_thresh_k == 1){
 
 soft_thresh_power = args$soft_thresh_k
 
-# calculate the adjacency matrix
-write("Calculating gene-gene adjacency matrix.", stderr())
-adjacency = adjacency(expr_data, power = soft_thresh_power);
-
-# adjacency matrix -> topological overlap matrix
-write("Converting adjacency matrix to Topological Overlap Matrix.", stderr())
-TOM = TOMsimilarity(adjacency)
-dissTOM = 1-TOM # TOM dissimilarity
+write("Calculating dissimilarity from Topological Overlap Matrix.", stderr())
+dissTOM = 1 - TOMsimilarityFromExpr(expr_data, power = soft_thresh_power)
 
 # create dendrogram with hclust
 write("Creating dendrogram from gene-gene TOM.", stderr())
@@ -129,7 +125,7 @@ colnames(merged_MEs) <- substring(colnames(merged_MEs), 3)
 
 # save plots to out dir - dendrogram (fine-grained and merged) and module dendrogram
 pdf(paste0(args$out_dir, "/gene_module_correlation.pdf"))
-MEDiss = 1-cor(fine_MEs);
+MEDiss = 1-cor(fine_MEs)
 # Cluster module eigengenes
 METree = hclust(as.dist(MEDiss), method = "average")
 # Plot the result
