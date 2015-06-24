@@ -45,3 +45,9 @@ Rscript eigengene_phenotype_correlations.R --eset="../results/discovery/expressi
 ```
 
 We could then run the identical pipeline for a validation set. At the end, we will have gene module to phenotype correlations for both discovery and validation sets. When there is real biological signal, we should see overlap in gene membership for modules in the discovery and validation set which are both correlated with the phenotype of interest.
+
+# Discovery and Validation
+An example R Markdown (tool for reproducible code embedded in html document) is in the analysis directory and outlines one method for comparing discovery and validation results that have been produced following the "putting it all together" pipeline in the section above.
+
+Essentially, any gene modules in the discovery and validation set that correlate with the same clinical outcome will be grouped together. A heatmap showing the overlap in gene membership for modules in the discovery and validation set will provide a visual interpretation of the corroboration of discovery signals by the validation set.
+
