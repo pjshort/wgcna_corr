@@ -1,0 +1,31 @@
+---
+title: "Discovery and Validation"
+author: "Patrick Short"
+date: "June 24, 2015"
+output: html_document
+---
+
+This analysis relies on two gene module to phenotype correlations which have been done in parallel. In brief, this means determining a soft thresholding parameter, constructing gene modules, calculating representative eigengenes for each module, and correlating these eigengenes with phenotypes.
+
+At the end of these workflows, we will have a matrix of gene module to phenotype correlations and p-values as well as a record of how genes were assigned module membership. We are interested in gene module to phenotype correlations that are present in both discovery and validation. We can then split by phenotype and generate heatmaps reflecting the similarity between discovery and validation gene modules. While modules will not be identical between discovery and validation sets, we hypothesize that many of the core genes will be shared - these genes may also be the more likely candidates for focused biological follow-up studies.
+
+Loading in the discrete correlations and gene modules from "../results/discovery" and "../results/validation" where outputs have been generated.
+
+```{r load discovery and validation data}
+fdr = 0.10 # criteria for significance
+
+discovery_modules = read.table("../results/discovery/gene_modules.txt")
+validation_modules = read.table("../results/validation/gene_modules.txt")
+
+load("../results/discovery/module_to_phenotype_correlation.RData")
+discovery_discrete = discrete_corr
+discovery_signif_pairs = which(discrete_p < fdr, arr.ind = TRUE)
+
+load("../results/validation/module_to_phenotype_correlation.RData")
+validation_discrete = discrete_corr
+validation_signif_pairs = which(discrete_p < fdr, arr.ind = TRUE)
+
+```
+
+To be continued when validation data is available.
+
