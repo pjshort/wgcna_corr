@@ -20,6 +20,7 @@ source("../R/eset_tools.R")
 option_list <- list(
   make_option("--cel_path", default="../data/TransplantCELs/batch1_2009",
               help="Top level directory to start recursive search for *.CEL files."),
+  make_option("--eset", default = NULL, help = "ExpressionSet object saved as an RData file (must be saved as variable named eset)."),
   make_option("--out_dir", default="../results",
               help="Location to save the ExpressionSet object. Defaults to ./eset.Rdata"),
   make_option("--verbose", action="store_true", default=FALSE,
@@ -28,12 +29,24 @@ option_list <- list(
 
 args <- parse_args(OptionParser(option_list=option_list))
 
-matched_files <- list.files(path = args$cel_path, pattern = ".*CEL", all.files = FALSE, full.names = TRUE, recursive = TRUE, ignore.case = TRUE)
-cels <- read.celfiles(matched_files)
-eset <- oligo::rma(cels, target="core")
+if (is.null(args$eset)){
+  write("No ExpressionSet RData found - calculating expression set from CEL files.", stderr())
+  cel_files = list.files(path = args$cel_path, pattern = ".*CEL", all.files = FALSE, full.names = TRUE, recursive = TRUE, ignore.case = TRUE)
+  eset = rma_eset(CEL_list = cel_files)
+  
+  if (!file.exists("../data/HuGene-1_0-st-v1.na35.hg19.transcript.csv")){
+    write("Did not find HuGene probe annotation file - download  from 
+http://www.affymetrix.com/support/technical/annotationfilesmain.affx and 
+put in the data subdirectory", stderr())}
+  affy_annotation = "../data/HuGene-1_0-st-v1.na35.hg19.transcript.csv"
+  
+  # filter for genes/probes with entrez ID - this will have the same set of genes as eset23
+  eset <- gene_filter_eset(eset, affy_annotation)
+} else {
+  load(args$eset)  # should load an ExpressionSet object
+}
 
-affy_annotation = "../data/HuGene-1_0-st-v1.na35.hg19.transcript.csv"
-eset <- gene_filter_eset(eset, affy_annotation)
+colnames(eset) <- str_extract(colnames(eset), "[6][0-9][0-9]")
 expr_data = t(exprs(eset))
 
 ### generate network using different soft thresholding parameters
