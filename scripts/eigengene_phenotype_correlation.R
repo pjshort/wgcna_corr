@@ -43,9 +43,9 @@ option_list <- list(
 
 args <- parse_args(OptionParser(option_list=option_list))
 
-# test conditions
-args$gene_modules = "../results//gene_modules/gene_modules.txt"
-args$eset = "../results/gene_modules/discovery_eset.RData"
+args$eset = "../results/discovery_full/expression_set.RData"
+args$gene_modules = "../results/discovery_full/gene_modules.txt"
+args$out_dir = "../results/discovery_full/"
 
 # load gene modules from tab delimited text file
 gene_modules = read.table(args$gene_modules, header=TRUE, sep = "\t")
@@ -78,7 +78,7 @@ continuous_pheno <- continuous_pheno[ , colSums(is.na(continuous_pheno)) < n_sam
 discrete_pheno <- discrete_pheno[ ,colSums(is.na(discrete_pheno)) < n_samples*0.75]
 
 # false discovery rate for multiple hypothesis testing
-fdr = 0.05
+fdr = 0.25
 
 if (length(table(module_colors > 30))){
   write("Too many gene modules to write names out heatmap - toggle --use_merged=TRUE to merged closely
@@ -95,7 +95,6 @@ discrete_corr = d[["corr"]]
 discrete_p = d[["p"]]
 rownames(discrete_corr) = substring(rownames(discrete_corr), 3)
 rownames(discrete_p) = substring(rownames(discrete_p), 3)
-
 
 c = pheno_heat_fig(expr_data, module_colors, continuous_pheno, 
                                 fname = paste0(args$out_dir, "/continuous_corr_heatmap.pdf"), 

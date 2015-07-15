@@ -2,7 +2,7 @@
 
 pheno_heat_fig <- function(expr_data, module_colors, phenotypes, 
                            fname = "pheno_heat_fig.pdf", method = "pearson", 
-                           signif_only = TRUE, fdr = 0.05, colors_only = FALSE){
+                           signif_only = TRUE, fdr = 0.05, colors_only = FALSE) {
   
   MEs0 = moduleEigengenes(expr_data, module_colors)$eigengenes
   MEs = orderMEs(MEs0)
@@ -18,32 +18,44 @@ pheno_heat_fig <- function(expr_data, module_colors, phenotypes,
   
   # benjamini-hochberg error rate correction
   p = apply(p_raw, MARGIN = 2, FUN = function(p) p.adjust(p, length(corr), method = "fdr"))
+ 
+  pheno_sim = hclust(dist(t(corr)))
   
-  phenos_to_display = seq(1, dim(phenotypes)[2])
+  # reorder p and corr columns by hierarchy
+  p = p[,pheno_sim$order]
+  corr = corr[,pheno_sim$order]
   
-  if (signif_only == TRUE){
+  # set x labels
+  xlabs = names(phenotypes)[pheno_sim$order]
+  
+  if (signif_only == TRUE){  # remove columns with non-significant results
     lowest_p = apply(p, MARGIN = 2, FUN = min)
-    phenos_to_display = lowest_p < fdr
-    corr = corr[ , phenos_to_display]
-    p = p[ , phenos_to_display]
+    corr = corr[ , lowest_p < fdr]
+    p = p[ , lowest_p < fdr]
+    xlabs = xlabs[lowest_p < fdr]
+  }  
+  
+  if (length(xlabs) > 30) { 
+    textMatrix = NULL
+  } else {
+    textMatrix = signif(corr, 2)
+    
+    # mark correlations with a * that fall below FDR 0.05
+    textMatrix[p < fdr] = paste0(textMatrix[p < fdr], "*")
+    
+    dim(textMatrix) = dim(corr)
   }
   
-  textMatrix = signif(corr, 2)
-  
-  # mark correlations with a * that fall below FDR 0.05
-  textMatrix[which(p < fdr)] = paste0(textMatrix[which(p < fdr)], "*")
-  
-  dim(textMatrix) = dim(corr)
-  
-  xlabs = names(phenotypes)[phenos_to_display]
+  # add * to significant x labels
   xlabs[colSums(p < fdr) > 0] = paste0(xlabs[colSums(p < fdr) > 0], "*")
   
+  # add * to ylabels (modules) with significant associations
   ylabs = substring(names(MEs), first = 3)
-  ylabs[rowSums(p < fdr) > 0] = paste0(ylabs[rowSums(p < fdr) > 0], "*")
+  ylabs[rowSums(p < fdr) > 0] = paste0(ylabs[rowSums(p < fdr) > 0], "*")  
   
   # Display the correlation values within a heatmap plot
   pdf(fname)
-  par(mar = c(8, 7.5, 3, 3));
+  par(mar = c(8, 7.5, 3, 3))
   if (colors_only){
     labeledHeatmap(Matrix = corr, xLabels = xlabs, yLabels = names(MEs),
                    yColorLabels = TRUE, colors = blueWhiteRed(50), 
@@ -60,7 +72,7 @@ pheno_heat_fig <- function(expr_data, module_colors, phenotypes,
   dev.off()
   
   # note that labeledHeatmap does not render within knitr - need to save and load as a chunk
-  return(list("corr" = corr, "p" = p_raw))
+  return(list("corr" = corr, "p" = p))
   
 }
 

@@ -47,12 +47,10 @@ option_list <- list(
 args <- parse_args(OptionParser(option_list=option_list))
 
 #test conditions
-args$soft_thresh_k = 10
-args$eset = "../results/discovery//expression_set.RData"
-args$out_dir = "../results/discovery/"
+args$soft_thresh_k = 9
+args$eset = "../results/discovery_combat/combatted_eset.RData"
+args$out_dir = "../results/discovery_combat/"
 
-
-# TODO - edit script to take ExpressionSet object instead of CEL files if user specifies
 if (is.null(args$eset)){
   write("No ExpressionSet RData found - calculating expression set from CEL files.", stderr())
   cel_files = list.files(path = args$cel_path, pattern = ".*CEL", all.files = FALSE, full.names = TRUE, recursive = TRUE, ignore.case = TRUE)

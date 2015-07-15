@@ -5,6 +5,7 @@
 
 ### dependencies
 library(optparse)
+library(stringr)
 library(oligo)
 library(Biobase)
 library(genefilter)
@@ -86,5 +87,6 @@ write("The plot produced can be used to pick a soft thresholding parameter
       mean connectivity is at a reasonable value.", stderr())
 
 write("Saving expression set in out dir.", stderr())
+
 
 save(eset, file = paste0(args$out_dir, "/expression_set.RData"))
