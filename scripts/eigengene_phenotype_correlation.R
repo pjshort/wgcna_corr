@@ -90,7 +90,7 @@ if (length(table(module_colors > 30))){
 
 d = pheno_heat_fig(expr_data, module_colors, discrete_pheno, 
                                fname = paste0(args$out_dir, "/discrete_corr_heatmap.pdf"), 
-                               signif_only = FALSE, fdr = fdr, colors_only = colors_only)
+                               signif_only = FALSE, fdr = fdr, colors_only = colors_only, method = "spearman")
 discrete_corr = d[["corr"]]
 discrete_p = d[["p"]]
 rownames(discrete_corr) = substring(rownames(discrete_corr), 3)
@@ -98,7 +98,7 @@ rownames(discrete_p) = substring(rownames(discrete_p), 3)
 
 c = pheno_heat_fig(expr_data, module_colors, continuous_pheno, 
                                 fname = paste0(args$out_dir, "/continuous_corr_heatmap.pdf"), 
-                                signif_only = TRUE, fdr = fdr, colors_only = colors_only)
+                                signif_only = TRUE, fdr = fdr, colors_only = colors_only, method = "pearson")
 continuous_corr = c[["corr"]]
 continuous_p = c[["p"]]
 rownames(continuous_corr) = substring(rownames(continuous_corr), 3)
