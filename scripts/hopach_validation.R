@@ -39,20 +39,20 @@ args <- parse_args(OptionParser(option_list=option_list))
 load(args$eset)  # loads a genes x patients Eset object
 
 if (args$subset == 0){
-  eset.subset = eset 
+  exp.subset = exprs(eset)
 } else {
   vars = apply(exprs(eset), 1, var)
   subset = vars > quantile(vars, (nrow(exprs(eset))-args$subset)/nrow(exprs(eset)))
-  eset.subset = exprs(eset)[subset,]
+  exp.subset = exprs(eset)[subset,]
 }
 
-hopach_gene_names = rownames(eset.subset)
-gene.dist = distancematrix(eset.subset, "cosangle")
+hopach_gene_names = rownames(exp.subset)
+gene.dist = distancematrix(exp.subset, "cosangle")
 
 if (args$greedy){
-  gene.hobj = hopach(eset.subset, dmat=gene.dist, clusters="greedy")
+  gene.hobj = hopach(exp.subset, dmat=gene.dist, clusters="greedy")
 } else {
-  gene.hobj = hopach(eset.subset, dmat=gene.dist)
+  gene.hobj = hopach(exp.subset, dmat=gene.dist)
 }
 
-save(eset.subset, gene.hobj, file = paste0(args$out_dir, "hopach_modules.RData"))
+save(exp.subset, gene.hobj, file = paste0(args$out_dir, "hopach_modules.RData"))
