@@ -55,4 +55,4 @@ if (args$greedy){
   gene.hobj = hopach(exp.subset, dmat=gene.dist)
 }
 
-save(exp.subset, gene.hobj, file = paste0(args$out_dir, "hopach_modules.RData"))
+save(exp.subset, gene.hobj, file = paste0(args$out_dir, "/hopach_modules.RData"))
